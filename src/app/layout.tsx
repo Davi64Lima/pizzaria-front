@@ -3,18 +3,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="pt-BR">
       <body className="flex flex-col min-h-screen font-sans">
         <CartProvider>
-          <MountProvider>
+          <PizzaProvider>
           <Header />
           <main className="flex-1">{children}</main>
           <Footer />
-          </MountProvider>
+          </PizzaProvider>
         </CartProvider>
       </body>
     </html>
   );
 }
 
-import { MountProvider } from "@/context/MountContext";
+import { PizzaProvider } from "@/context/PizzaContext";
 import { CartProvider } from "@/context/CartContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";

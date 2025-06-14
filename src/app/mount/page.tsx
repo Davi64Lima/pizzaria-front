@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { flavors } from "@/utils/data";
 import { IFlavors } from "@/types/pizza";
-import { pizzaSizes, types } from "@/context/MountContext";
-import { useMount } from "@/context/MountContext";
+import { pizzaSizes, types } from "@/context/PizzaContext";
+import { usePizza } from "@/context/PizzaContext";
 import { useCart } from "@/context/CartContext";
  
 
@@ -15,7 +15,7 @@ import { useCart } from "@/context/CartContext";
 
 export default function MontarPizzaPage() {
   const [type, setType] = useState(types[0])
-  const {pizza,addToPizza,clearPizza,removeFromPizza,updatePizzaSize,setPizza} = useMount()
+  const {pizza,addToPizza,clearPizza,removeFromPizza,updatePizzaSize,setPizza} = usePizza()
   const {addToCart} = useCart()
 
                 

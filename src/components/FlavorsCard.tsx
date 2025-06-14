@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import pizzaPng from '@/assets/pizza.jpg';
-import { useMount } from '@/context/MountContext';
+import { usePizza } from '@/context/PizzaContext'; 
 import { IFlavors } from '@/types/pizza';
 import { useRouter } from 'next/navigation'; 
 
@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation';
 
 export function FlavorCard({ flavor }: { flavor: IFlavors }) {
   const router = useRouter();
-  const { addToPizza } = useMount();
+  const { addToPizza } = usePizza();
 
   return (
     <div className="bg-white shadow-md rounded-lg p-4 m-4 max-w-xs">

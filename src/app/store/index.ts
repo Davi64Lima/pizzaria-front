@@ -5,4 +5,6 @@ export const store = configureStore({
     middleware: (getDefaultMidleware) => getDefaultMidleware({serializableCheck:false})
 })
 
+export type AppStore = typeof store
 export type RootState = ReturnType<typeof store.getState>
+export type AppDispatch = AppStore['dispatch']

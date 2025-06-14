@@ -19,7 +19,7 @@ export const pizzaSizes = [
 
 
 
-interface MountContextType {
+interface PizzaContextType {
   pizza: IPizza;
   setPizza: Dispatch<SetStateAction<IPizza>>;
   addToPizza: (item: IFlavors) => void;
@@ -28,9 +28,9 @@ interface MountContextType {
   updatePizzaSize: (newSize: TPizzaSize) => void;
 }
 
-const MountContext = createContext<MountContextType>({} as MountContextType);
+const PizzaContext = createContext<PizzaContextType>({} as PizzaContextType);
 
-export function MountProvider({ children }: { children: React.ReactNode }) {
+export function PizzaProvider({ children }: { children: React.ReactNode }) {
   const [pizza, setPizza] = useState<IPizza>({
     id: '',
     name: '',
@@ -128,16 +128,16 @@ const updatePizzaPrice = (size: TPizzaSize, flavors: IFlavors[]) => {
 
 
   return (
-    <MountContext.Provider value={{ pizza, setPizza, addToPizza, removeFromPizza, clearPizza, updatePizzaSize }}>
+    <PizzaContext.Provider value={{ pizza, setPizza, addToPizza, removeFromPizza, clearPizza, updatePizzaSize }}>
       {children}
-    </MountContext.Provider>
+    </PizzaContext.Provider>
 
   );
 }
 
 
-export function useMount() {
-  const context = useContext(MountContext);
-  if (!context) throw new Error("useMount must be used within a MountProvider");
+export function usePizza() {
+  const context = useContext(PizzaContext);
+  if (!context) throw new Error("usePizza must be used within a PizzaProvider");
   return context;
 }
