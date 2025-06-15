@@ -37,7 +37,7 @@ export default function Header() {
               </Link>
             </li>
             <li>
-              <Link href="/login" className="flex items-center gap-1 hover:underline">
+              <Link href="/auth/login" className="flex items-center gap-1 hover:underline">
                 <User size={18} /> Login
               </Link>
             </li>
