@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 export type IOrder = {
   id: string;
+  code: string
   products: IProduct[],
   address: IAddress,
   user: IUser,
@@ -13,6 +14,8 @@ export type IOrder = {
   paymentMethod: IOrderPaymentMethod
   status: IOrderStatus,
 }
+
+
 
 export type TOrderContex = {
   order: IOrder
@@ -26,7 +29,8 @@ const OrderContext = createContext<TOrderContex>({} as TOrderContex);
 
 export const OrderProvider = ({ children }: { children: React.ReactNode }) => {
   const initialOrder: IOrder = {
-    id: uuidv4(),
+    id:'' ,
+    code:'' ,
     products: [],
     address: {
       street: "",
@@ -47,28 +51,29 @@ export const OrderProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
 
-    const [order, setOrder] = useState<IOrder>(initialOrder);
+  const [order, setOrder] = useState<IOrder>(initialOrder);
 
-    useEffect(() => {
-        // Só tenta acessar localStorage no browser
-        if (typeof window !== "undefined") {
-            const stored = localStorage.getItem("order");
-            if (stored) {
-                setOrder(JSON.parse(stored));
-            }
-        }
-    }, []);
+  useEffect(() => {
+    // Só tenta acessar localStorage no browser
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("order");
+      if (stored) {
+        setOrder(JSON.parse(stored));
+      }
+    }
+  }, []);
 
-    useEffect(() => {
-        if (typeof window !== "undefined") {
-            localStorage.setItem("order", JSON.stringify(order));
-        }
-    }, [order]);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("order", JSON.stringify(order));
+    }
+  }, [order]);
 
   const generateOrder = (products: IProduct[], user: IUser, address: IAddress, paymentMethod: IOrderPaymentMethod) => {
     const totalOrderValue = products.reduce((acc, i) => acc + (i.price * (i.quantity ?? 1)), 0);
     setOrder({
       id: uuidv4(),
+      code: generateBookingCode(),
       products,
       address,
       user,
@@ -77,6 +82,16 @@ export const OrderProvider = ({ children }: { children: React.ReactNode }) => {
       status: "pending",
     });
   };
+
+  const generateBookingCode = () => {
+    //  let exists: boolean
+    //  do {
+    const code = (Math.random() + 1).toString(36).replace('0', '').replace('o', '').replace('i', '').replace('j', '').substring(2, 7).toUpperCase()
+    //  exists = !!(await bookingRepository.findOne({ where: { bookingCode: code } }))
+    //  } while (exists)
+
+    return code
+  }
 
   const updateOrderStatus = (status: IOrderStatus) => {
     setOrder(prev => ({ ...prev, status }));

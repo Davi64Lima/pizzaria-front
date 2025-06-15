@@ -139,8 +139,8 @@ export default function CartPageClient() {
             <p className="text-gray-600">Status: <span className="font-semibold text-yellow-600">Aguardando confirmação</span></p>
 
             <div className="text-left text-sm text-gray-700 bg-gray-100 rounded p-3 space-y-1">
-              <p><strong>Pedido:</strong> #{order.id.slice(0, 8)}</p>
-              <p><strong>Nome:</strong> {order.user?.name}</p>
+              <p><strong>Pedido:</strong> #{order.code}</p>
+              <p><strong>Nome:</strong> {order.user}</p>
               <p><strong>Contato:</strong> {order.user?.number}</p>
               <p><strong>Endereço:</strong> {order.address?.street}</p>
               <p><strong>Pagamento:</strong> {order.paymentMethod}</p>
