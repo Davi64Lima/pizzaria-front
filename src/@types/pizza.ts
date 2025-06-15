@@ -31,3 +31,19 @@ export type TPizzaSize = {
     value: string;
     flavors: number;
 }
+
+export interface IAddress {
+  
+}
+
+export interface IUser {
+
+}
+
+export interface IOrderPaymentMethod {
+
+}
+
+export interface IOrderStatus {
+  
+}

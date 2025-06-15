@@ -1,6 +1,6 @@
 "use client";
 
-import {  IProduct } from "@/types/pizza";
+import {  IProduct } from "@/@types/pizza";
 import { createContext, useContext, useState, useEffect } from "react";
 
 
@@ -8,12 +8,12 @@ import { createContext, useContext, useState, useEffect } from "react";
 interface CartContextType {
   cart: IProduct[];
   addToCart: (item: IProduct) => void;
-  removeFromCart: (id: string) => void;
+  removeFromCart: (name: string) => void;
   clearCart: () => void;
-  decrementFromCart: (id: string) => void;
+  decrementFromCart: (name: string) => void;
 }
 
-const CartContext = createContext<CartContextType | undefined>(undefined);
+const CartContext = createContext<CartContextType>({} as CartContextType);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cart, setCart] = useState<IProduct[]>([]);
@@ -31,10 +31,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const addToCart = (item: IProduct) => {
     setCart((prev) => {
-      const exists = prev.find((i) => i.id === item.id);
+      const exists = prev.find((i) => i.name === item.name);
       if (exists) {
         return prev.map((i) =>
-          i.id === item.id
+          i.name === item.name
             ? { ...i, quantity: (i.quantity ?? 1) + (1) }
             : i
         );
@@ -43,15 +43,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
-  const decrementFromCart = (id: string) => {
+  const decrementFromCart = (name: string) => {
     setCart((prev) => {
-      const exists = prev.find((i) => i.id === id);
+      const exists = prev.find((i) => i.name === name);
       if (exists) {
         if (exists.quantity === 1) {
-          removeFromCart(id);
+          removeFromCart(name);
         }
         return prev.map((i) =>
-          i.id === id
+          i.name === name
             ? { ...i, quantity: (i.quantity ?? 1) - (1) }
             : i
         );
@@ -60,8 +60,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
-  const removeFromCart = (id: string) => {
-    setCart((prev) => prev.filter((item) => item.id !== id));
+  const removeFromCart = (name: string) => {
+    setCart((prev) => prev.filter((item) => item.name !== name));
   };
 
   const clearCart = () => setCart([]);

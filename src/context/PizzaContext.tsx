@@ -1,6 +1,6 @@
 "use client";
 
-import { IFlavors, IPizza, TPizzaSize } from "@/types/pizza";
+import { IFlavors, IPizza, TPizzaSize } from "@/@types/pizza";
 import { createContext, useContext, useState, useEffect, Dispatch, SetStateAction } from "react";
 import { flavors } from "@/utils/data";
 

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { flavors } from "@/utils/data";
-import { IFlavors } from "@/types/pizza";
+import { IFlavors } from "@/@types/pizza";
 import { pizzaSizes, types } from "@/context/PizzaContext";
 import { usePizza } from "@/context/PizzaContext";
 import { useCart } from "@/context/CartContext";
@@ -118,7 +118,12 @@ export default function MontarPizzaPage() {
         <button
           className="mt-2 w-full bg-yellow-500 text-black font-semibold py-2 rounded-lg hover:bg-yellow-400 transition"
           disabled={(pizza.flavors?.length ?? 0) !== pizza.size.flavors}
-          onClick={() => addToCart(pizza)}
+          onClick={
+            () => {
+              addToCart(pizza)
+              clearPizza()
+            }
+          }
         >
           {(pizza.flavors?.length ?? 0) === pizza.size.flavors
             ? "Adicionar ao carrinho"

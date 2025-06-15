@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import pizzaPng from '@/assets/pizza.jpg';
 import { usePizza } from '@/context/PizzaContext'; 
-import { IFlavors } from '@/types/pizza';
+import { IFlavors } from '@/@types/pizza';
 import { useRouter } from 'next/navigation'; 
 
 
@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation';
 
 export function FlavorCard({ flavor }: { flavor: IFlavors }) {
   const router = useRouter();
-  const { addToPizza } = usePizza();
+  const { addToPizza,pizza } = usePizza();
 
   return (
     <div className="bg-white shadow-md rounded-lg p-4 m-4 max-w-xs">
@@ -34,7 +34,9 @@ export function FlavorCard({ flavor }: { flavor: IFlavors }) {
 
       <button
         onClick={() => {
+          if (pizza.flavors && pizza.flavors.length < pizza.size.flavors) {
           addToPizza(flavor)
+          }
           router.push('/mount')
         }}
         
