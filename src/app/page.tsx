@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import pizzaPng from "@/assets/pizza.jpg";
 import Link from "next/link";
 import { useKeenSlider } from "keen-slider/react";
 import { ArrowRight } from "lucide-react";
@@ -57,7 +58,7 @@ export default function HomePage() {
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div key={i} className="keen-slider__slide bg-white rounded-lg shadow p-2">
               <Image
-                src={`/pizza-${i}.jpg`} // Adicione as imagens em /public
+                src={pizzaPng} // Adicione as imagens em /public
                 alt={`Pizza ${i}`}
                 width={300}
                 height={200}
