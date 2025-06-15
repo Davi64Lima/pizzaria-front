@@ -33,17 +33,42 @@ export type TPizzaSize = {
 }
 
 export interface IAddress {
-  
+  street: string;
+  number: string;
+  complement?: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+  zipcode: string;
+  reference?: string;
+  latitude?: number;
+  longitude?: number;
+  formattedAddress?: string;
 }
 
 export interface IUser {
-
+  name: string;
+  phone: string;
+  email?: string;
+  password?: string;
 }
 
 export interface IOrderPaymentMethod {
-
+  creditCard?: {
+    cardNumber: string;
+    cardHolderName: string;
+    expirationDate: string;
+    cvv: string;
+  };
+  cash?: boolean;
+  pix?: boolean;
 }
 
 export interface IOrderStatus {
-  
+  pending: boolean;
+  inProgress: boolean;
+  completed: boolean;
+  canceled: boolean;
+  delivered: boolean;
+  ready: boolean;
 }

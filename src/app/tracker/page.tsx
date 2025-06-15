@@ -22,9 +22,6 @@ export default function TrackerPage() {
     if (trackingCode === order.code && order) {
       setOrderStatus('Seu pedido está em preparação!');
       setFoundOrder(order); // Exibe os detalhes do pedido do contexto
-    } else if (trackingCode === '67890') {
-      setOrderStatus('Seu pedido saiu para entrega!');
-      setFoundOrder({ id: '67890', items: [{ name: 'Pizza Grande', qty: 1 }], total: 60.00 }); // Exemplo de um pedido mockado
     } else if (trackingCode) {
       setOrderStatus('Código de pedido não encontrado.');
       setFoundOrder(null);
