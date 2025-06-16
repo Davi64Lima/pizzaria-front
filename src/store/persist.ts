@@ -43,6 +43,7 @@ export const persistedReducers = () => {
       // WhiteList contains a list of Slices names which can be stored on AsyncStorage
       whitelist: [
         ESliceNames.CART,
+        ESliceNames.PIZZA
         // ESliceNames.FAVORITE,
         // ESliceNames.APP_STATE,
         // ESliceNames.PROFILE,
