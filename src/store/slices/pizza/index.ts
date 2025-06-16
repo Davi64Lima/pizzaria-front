@@ -42,15 +42,22 @@ export const pizzaSlice = createSlice({
             state.pizza = action.payload
         },
         addToPizza: (state, action: PayloadAction<IFlavors>) => {
+            // Get max flavors allowed for current pizza size
+            const maxFlavors = state.pizza.size.flavors;
+            const currentFlavorsCount = state.pizza.flavors?.length ?? 0;
+
             const exists = state.pizza.flavors?.find((flavor) => flavor.id === action.payload.id);
             if (exists) {
-                state.pizza.flavors = state.pizza.flavors?.map((flavor) =>
-                    flavor.id === action.payload.id
-                        ? { ...flavor, quantity: (flavor.quantity ?? 1) + 1 }
-                        : flavor
-                );
+            state.pizza.flavors = state.pizza.flavors?.map((flavor) =>
+                flavor.id === action.payload.id
+                ? { ...flavor, quantity: (flavor.quantity ?? 1) + 1 }
+                : flavor
+            );
             } else {
+            if (currentFlavorsCount < maxFlavors) {
                 state.pizza.flavors?.push({ ...action.payload, quantity: 1 });
+            }
+            // If max flavors reached, do not add new flavor
             }
             state.pizza.name = generatePizzaName(state.pizza.size, state.pizza.flavors ?? []);
             state.pizza.price = updatePizzaPrice(state.pizza.size, state.pizza.flavors ?? []);

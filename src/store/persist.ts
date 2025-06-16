@@ -6,6 +6,7 @@ import storage from 'redux-persist/lib/storage'
 import { persistReducer } from 'redux-persist';
 import { ESliceNames } from './slices/types';
 import { cartSliceReducer as cart } from './slices/cart';
+import { pizzaSliceReducer as pizza } from './slices/pizza';
 // import { newCartSliceReducer as newCart } from './slices/newCart';
 // import { favoriteSliceReducer as favorite } from './slices/favorite';
 // import { wishListSliceReducer as wishList } from './slices/wishList';
@@ -19,6 +20,7 @@ import { cartSliceReducer as cart } from './slices/cart';
 
 const combinedReducers = combineReducers({
   cart,
+  pizza,
 //   newCart,
 //   favorite,
 //   appState,

@@ -2,13 +2,15 @@
 
 import Image from 'next/image';
 import pizzaPng from '@assets/pizza.jpg';
-import { usePizza } from '@context/PizzaContext';
 import { IFlavors } from '@@types/pizza';
 import { useRouter } from 'next/navigation';
 
 
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@components/ui/card';
 import { Button } from '@components/ui/button'; // Se você for usar botões dentro do card
+import { useAppSelector } from '@hooks/redux/useAppSelector';
+import { useAppDispatch } from '@hooks/redux/useAppDispatch';
+import { pizzaSliceActions } from '@store/slices/pizza';
 
 interface FlavorCardProps {
   flavor: IFlavors;
@@ -17,8 +19,9 @@ interface FlavorCardProps {
 
 export function FlavorCard({ flavor }: { flavor: IFlavors }) {
   const router = useRouter();
-  const { addToPizza, pizza } = usePizza();
-
+  const {pizza} = useAppSelector(state => state.pizza)
+  const dispatch = useAppDispatch()
+  
   return (
     <Card className="flex flex-col h-full hover:shadow-lg transition-shadow duration-200">
       <CardHeader className="flex-grow">
@@ -40,7 +43,7 @@ export function FlavorCard({ flavor }: { flavor: IFlavors }) {
         <Button
           onClick={() => {
             if (pizza.flavors && pizza.flavors.length < pizza.size.flavors) {
-              addToPizza(flavor)
+              dispatch(pizzaSliceActions.addToPizza(flavor))
             }
             router.push('/mount')
           }}

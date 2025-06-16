@@ -3,30 +3,30 @@
 import { useEffect, useState } from "react";
 import { flavors } from "@utils/data";
 import { IFlavors } from "@@types/pizza";
-import { pizzaSizes, types } from "@context/PizzaContext";
-import { usePizza } from "@context/PizzaContext";
+import { pizzaSizes, types } from "@store/slices/pizza/types";
 
-import { Check, ShoppingCart, Plus, CloudCog } from "lucide-react";
+import { Check, ShoppingCart, Plus } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@components/ui/dialog";
 import { Button } from "@components/ui/button";
 import { useRouter } from "next/navigation";
 import { cartSliceActions } from "@store/slices/cart";
+import { pizzaSliceActions } from "@store/slices/pizza";
 import { useAppSelector } from "@hooks/redux/useAppSelector";
 import { useAppDispatch } from "@hooks/redux/useAppDispatch";
 
 export default function MontarPizzaPage() {
   const [type, setType] = useState(types[0]);
   const [showConfirm, setShowConfirm] = useState(false);
-  const { pizza, addToPizza, clearPizza, removeFromPizza, updatePizzaSize } = usePizza();
   const { cart } = useAppSelector(state => state.cart)
+  const {pizza} = useAppSelector(state => state.pizza)
   const dispatch = useAppDispatch()
   const router = useRouter();
 
   const toggleFlavor = (flavor: IFlavors) => {
     if (pizza.flavors?.some((f) => f.id === flavor.id)) {
-      removeFromPizza(flavor.id);
+      dispatch(pizzaSliceActions.removeFromPizza(flavor.id));
     } else if (pizza.flavors && pizza.flavors.length < pizza.size.flavors) {
-      addToPizza(flavor);
+      dispatch(pizzaSliceActions.addToPizza(flavor));
     }
   };
 
@@ -46,7 +46,7 @@ export default function MontarPizzaPage() {
   };
 
   const finalize = (toCart = false) => {
-    clearPizza();
+    dispatch(pizzaSliceActions.clearPizza());
     setShowConfirm(false);
     if (toCart) router.push("/cart");
   };
@@ -63,8 +63,8 @@ export default function MontarPizzaPage() {
             <button
               key={s.value}
               onClick={() => {
-                updatePizzaSize(s);
-                clearPizza();
+                dispatch(pizzaSliceActions.updatePizzaSize(s));
+                dispatch(pizzaSliceActions.clearPizza());
               }}
               className={`p-2 rounded-lg border transition ${
                 pizza.size.value === s.value
