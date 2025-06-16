@@ -5,8 +5,8 @@ import { flavors } from "@utils/data";
 import { IFlavors } from "@@types/pizza";
 import { pizzaSizes, types } from "@context/PizzaContext";
 import { usePizza } from "@context/PizzaContext";
-import { useCart } from "@context/CartContext";
-import { Check, ShoppingCart, Plus } from "lucide-react";
+
+import { Check, ShoppingCart, Plus, CloudCog } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@components/ui/dialog";
 import { Button } from "@components/ui/button";
 import { useRouter } from "next/navigation";
@@ -18,7 +18,6 @@ export default function MontarPizzaPage() {
   const [type, setType] = useState(types[0]);
   const [showConfirm, setShowConfirm] = useState(false);
   const { pizza, addToPizza, clearPizza, removeFromPizza, updatePizzaSize } = usePizza();
-  const { addToCart } = useCart();
   const { cart } = useAppSelector(state => state.cart)
   const dispatch = useAppDispatch()
   const router = useRouter();
@@ -36,8 +35,13 @@ export default function MontarPizzaPage() {
   },[cart])
 
   const confirmPizza = () => {
-    dispatch(cartSliceActions.saveCart(pizza));
-
+    if (cart.length === 0) {
+      console.log('create card',pizza)
+      dispatch(cartSliceActions.saveCart([pizza]))
+    } else {
+      console.log('add pizza', pizza)
+       dispatch(cartSliceActions.addToCart(pizza))
+    }
     setShowConfirm(true);
   };
 

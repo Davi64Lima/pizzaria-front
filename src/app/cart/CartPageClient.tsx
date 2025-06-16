@@ -1,11 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { useCart } from "@context/CartContext";
 import { useOrder } from "@context/OrderContext";
+import { useAppSelector } from "@hooks/redux/useAppSelector";
+import { useAppDispatch } from "@hooks/redux/useAppDispatch";
+import { cartSliceActions } from "@store/slices/cart";
 
 export default function CartPageClient() {
-  const { cart, removeFromCart, clearCart, addToCart, decrementFromCart } = useCart();
+  const dispatch = useAppDispatch()
+  const {cart} = useAppSelector(state => state.cart)
   const { generateOrder, order } = useOrder();
 
   const [address, setAddress] = useState("");
@@ -31,7 +34,7 @@ export default function CartPageClient() {
     }, paymentMethod as any);
 
     setShowConfirmation(true);
-    clearCart();
+    dispatch(cartSliceActions.clearCart())
   };
 
   if (cart.length === 0 && !showConfirmation) {
@@ -47,7 +50,7 @@ export default function CartPageClient() {
       </div>
     );
   }
-
+  console.log(cart)
   return (
     <div className="space-y-6 relative">
 
@@ -62,9 +65,9 @@ export default function CartPageClient() {
                 </p>
               </div>
               <div className="flex gap-2">
-                <button onClick={() => addToCart(item)}>+</button>
-                {item.quantity! > 1 && <button onClick={() => decrementFromCart(item.name)}>-</button>}
-                <button onClick={() => removeFromCart(item.name)} className="text-red-500 text-sm">
+                <button onClick={() => dispatch(cartSliceActions.addToCart(item))}>+</button>
+                {item.quantity! > 1 && <button onClick={() => dispatch(cartSliceActions.decrementFromCart(item.name))}>-</button>}
+                <button onClick={() => dispatch(cartSliceActions.removeFromCart(item.name))} className="text-red-500 text-sm">
                   Remover
                 </button>
               </div>
@@ -120,7 +123,7 @@ export default function CartPageClient() {
 
           <div className="flex gap-2 mt-4">
             <button
-              onClick={clearCart}
+              onClick={()=> dispatch(cartSliceActions.clearCart())}
               className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
             >
               Limpar Carrinho
