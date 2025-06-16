@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { flavors } from "@/utils/data";
 import { IFlavors } from "@/@types/pizza";
 import { pizzaSizes, types } from "@/context/PizzaContext";
@@ -10,12 +10,17 @@ import { Check, ShoppingCart, Plus } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { cartSliceActions } from "@/store/slices/cart";
+import { useAppSelector } from "@/hooks/redux/useAppSelector";
+import { useAppDispatch } from "@/hooks/redux/useAppDispatch";
 
 export default function MontarPizzaPage() {
   const [type, setType] = useState(types[0]);
   const [showConfirm, setShowConfirm] = useState(false);
   const { pizza, addToPizza, clearPizza, removeFromPizza, updatePizzaSize } = usePizza();
   const { addToCart } = useCart();
+  const { cart } = useAppSelector(state => state.cart)
+  const dispatch = useAppDispatch()
   const router = useRouter();
 
   const toggleFlavor = (flavor: IFlavors) => {
@@ -26,8 +31,13 @@ export default function MontarPizzaPage() {
     }
   };
 
+  useEffect(()=>{
+    console.log(cart)
+  },[cart])
+
   const confirmPizza = () => {
-    addToCart(pizza);
+    dispatch(cartSliceActions.saveCart(pizza));
+
     setShowConfirm(true);
   };
 
