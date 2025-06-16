@@ -1,7 +1,7 @@
 
-import { flavors } from '@/utils/data';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FlavorCard } from '@/components/FlavorsCard'
+import { flavors } from '@utils/data';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@components/ui/tabs';
+import { FlavorCard } from '@components/FlavorsCard'
 
 
 export default function Menu() {

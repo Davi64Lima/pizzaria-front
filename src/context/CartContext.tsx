@@ -1,6 +1,6 @@
 "use client";
 
-import {  IProduct } from "@/@types/pizza";
+import {  IProduct } from "@@types/pizza";
 import { createContext, useContext, useState, useEffect } from "react";
 
 

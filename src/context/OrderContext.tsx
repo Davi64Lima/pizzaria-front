@@ -1,7 +1,7 @@
 'use client'
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { IAddress, IProduct, IUser, IOrderPaymentMethod, IOrderStatus } from "@/@types/pizza";
+import { IAddress, IProduct, IUser, IOrderPaymentMethod, IOrderStatus } from "@@types/pizza";
 import { v4 as uuidv4 } from 'uuid';
 
 export type IOrder = {

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import pizzaPng from "@/assets/pizza.jpg";
+import pizzaPng from "@assets/pizza.jpg";
 import Link from "next/link";
 import { useKeenSlider } from "keen-slider/react";
 import { ArrowRight } from "lucide-react";

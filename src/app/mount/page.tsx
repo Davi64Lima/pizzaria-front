@@ -1,18 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { flavors } from "@/utils/data";
-import { IFlavors } from "@/@types/pizza";
-import { pizzaSizes, types } from "@/context/PizzaContext";
-import { usePizza } from "@/context/PizzaContext";
-import { useCart } from "@/context/CartContext";
+import { flavors } from "@utils/data";
+import { IFlavors } from "@@types/pizza";
+import { pizzaSizes, types } from "@context/PizzaContext";
+import { usePizza } from "@context/PizzaContext";
+import { useCart } from "@context/CartContext";
 import { Check, ShoppingCart, Plus } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@components/ui/dialog";
+import { Button } from "@components/ui/button";
 import { useRouter } from "next/navigation";
-import { cartSliceActions } from "@/store/slices/cart";
-import { useAppSelector } from "@/hooks/redux/useAppSelector";
-import { useAppDispatch } from "@/hooks/redux/useAppDispatch";
+import { cartSliceActions } from "@store/slices/cart";
+import { useAppSelector } from "@hooks/redux/useAppSelector";
+import { useAppDispatch } from "@hooks/redux/useAppDispatch";
 
 export default function MontarPizzaPage() {
   const [type, setType] = useState(types[0]);

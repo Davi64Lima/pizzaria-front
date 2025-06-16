@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { IOrder, useOrder } from '@/context/OrderContext'; // Certifique-se de que este caminho está correto
-import { IProduct } from '@/@types/pizza';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@components/ui/card';
+import { Input } from '@components/ui/input';
+import { Button } from '@components/ui/button';
+import { Label } from '@components/ui/label';
+import { IOrder, useOrder } from '@context/OrderContext'; // Certifique-se de que este caminho está correto
+import { IProduct } from '@@types/pizza';
 
 export default function TrackerPage() {
   const { order } = useOrder(); // Pega o pedido do contexto, se houver

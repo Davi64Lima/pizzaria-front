@@ -9,4 +9,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 }
 
 
-import '@/app/globals.css';
+import '@app/globals.css';

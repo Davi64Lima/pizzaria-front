@@ -1,11 +1,11 @@
 'use client'
 
-import {AppProvider} from '@/context/index'
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import {AppProvider} from '@context/index'
+import Header from "@components/Header";
+import Footer from "@components/Footer";
 import './globals.css';
 import { Provider } from 'react-redux';
-import { store } from '@/store';
+import { store } from '@store';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

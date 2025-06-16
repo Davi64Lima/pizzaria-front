@@ -1,4 +1,4 @@
-import { IProduct } from "@/@types/pizza";
+import { IProduct } from "@@types/pizza";
 import { createSlice } from "@reduxjs/toolkit";
 import { ESliceNames } from "../types";
 

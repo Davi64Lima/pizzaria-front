@@ -9,7 +9,7 @@ import React, {
   ReactNode,
 } from 'react';
 import { IOrder } from './OrderContext';
-import { IAddress } from '@/@types/pizza';
+import { IAddress } from '@@types/pizza';
 import { CloudCog } from 'lucide-react';
 import { register } from 'module';
 

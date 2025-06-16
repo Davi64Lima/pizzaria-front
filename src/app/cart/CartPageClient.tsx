@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useCart } from "@/context/CartContext";
-import { useOrder } from "@/context/OrderContext";
+import { useCart } from "@context/CartContext";
+import { useOrder } from "@context/OrderContext";
 
 export default function CartPageClient() {
   const { cart, removeFromCart, clearCart, addToCart, decrementFromCart } = useCart();

@@ -1,14 +1,14 @@
 "use client";
 
 import Image from 'next/image';
-import pizzaPng from '@/assets/pizza.jpg';
-import { usePizza } from '@/context/PizzaContext';
-import { IFlavors } from '@/@types/pizza';
+import pizzaPng from '@assets/pizza.jpg';
+import { usePizza } from '@context/PizzaContext';
+import { IFlavors } from '@@types/pizza';
 import { useRouter } from 'next/navigation';
 
 
-import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button'; // Se você for usar botões dentro do card
+import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@components/ui/card';
+import { Button } from '@components/ui/button'; // Se você for usar botões dentro do card
 
 interface FlavorCardProps {
   flavor: IFlavors;
