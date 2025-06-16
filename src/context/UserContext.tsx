@@ -8,15 +8,21 @@ import React, {
   useEffect,
   ReactNode,
 } from 'react';
+import { IOrder } from './OrderContext';
+import { IAddress } from '@/@types/pizza';
+import { CloudCog } from 'lucide-react';
+import { register } from 'module';
 
 // 1. Definindo o tipo para o objeto de usuário
 interface IUser {
   id: string;
   name: string;
   email: string;
-  // Adicione outras propriedades do usuário que você queira armazenar, ex:
-  // role: 'admin' | 'customer';
-  // token: string; // Se você estiver armazenando o token JWT aqui (cuidado com segurança)
+  orderHistory?: IOrder[]; // Exemplo de histórico de pedidos, pode ser um array de IDs de pedidos
+  phone: string; // Número de telefone do usuário
+  role?: 'admin' | 'customer'; // Papel do usuário, se necessário
+  token?: string; // Token JWT, se você estiver armazenando isso
+  address: IAddress; // Endereço do usuário, se necessário
 }
 
 // 2. Definindo o tipo para o contexto
@@ -24,7 +30,8 @@ interface UserContextType {
   user: IUser | null;
   isAuthenticated: boolean;
   isLoading: boolean; // Indica se o carregamento inicial (ex: verificação de sessão) está ocorrendo
-  login: (userData: IUser, token?: string) => Promise<void>;
+  register: (userData: IUser) => Promise<void>; // Função para registrar um novo usuário
+  login: (userData: IUser) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -50,6 +57,7 @@ export const UserProvider = ({ children }: UserProviderProps) => {
       const storedToken = localStorage.getItem('authToken');
 
       if (storedUser && storedToken) {
+        
         try {
           const parsedUser: IUser = JSON.parse(storedUser);
           // Opcional: validar o token no backend aqui
@@ -94,8 +102,31 @@ export const UserProvider = ({ children }: UserProviderProps) => {
     // window.location.href = '/login';
   };
 
+  const register = async (userData: IUser) => {
+    // Aqui você faria a lógica para registrar o usuário, como uma requisição para o backend
+    // Após o registro, você pode fazer o login automaticamente ou redirecionar para a página de login
+    try {
+      // Simulando uma requisição de registro
+      const response = await new Promise<IUser>((resolve) => {
+        setTimeout(() => {
+          resolve({
+            ...userData,
+            id: 'new-user-id', // Simulando um ID gerado pelo backend
+            role: 'customer', // Definindo o papel do usuário
+          });
+        }
+        , 1000);
+      });
+      // Após o registro, você pode fazer o login automaticamente
+      await login(response);
+    } catch (error) {
+      console.error('Erro ao registrar usuário:', error);
+      throw new Error('Erro ao registrar usuário');
+    }
+  };
+
   return (
-    <UserContext.Provider value={{ user, isAuthenticated, isLoading, login, logout }}>
+    <UserContext.Provider value={{ user, isAuthenticated, isLoading, login, logout,register }}>
       {children}
     </UserContext.Provider>
   );
