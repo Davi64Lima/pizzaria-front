@@ -20,9 +20,14 @@ export default function CartPageClient() {
   const handleConfirmOrder = () => {
     generateOrder(cart, {
       name: userName,
-      number: userNumber,
+      phone: userNumber,
     }, {
       street: address,
+      number: "",
+      neighborhood: "",
+      city: "",
+      state: "",
+      zipcode: ""
     }, paymentMethod as any);
 
     setShowConfirmation(true);
@@ -141,9 +146,9 @@ export default function CartPageClient() {
             <div className="text-left text-sm text-gray-700 bg-gray-100 rounded p-3 space-y-1">
               <p><strong>Pedido:</strong> #{order.code}</p>
               <p><strong>Nome:</strong> {order.user?.name}</p>
-              <p><strong>Contato:</strong> {order.user?.number}</p>
+              <p><strong>Contato:</strong> {order.user?.phone}</p>
               <p><strong>Endereço:</strong> {order.address?.street}</p>
-              <p><strong>Pagamento:</strong> {order.paymentMethod}</p>
+              <p><strong>Pagamento:</strong> {String(order.paymentMethod)}</p>
               <p><strong>Total:</strong> R$ {(order.value / 100).toFixed(2)}</p>
             </div>
 
