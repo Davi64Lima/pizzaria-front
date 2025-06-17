@@ -1,16 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { useOrder } from "@context/OrderContext";
 import { useAppSelector } from "@hooks/redux/useAppSelector";
 import { useAppDispatch } from "@hooks/redux/useAppDispatch";
 import { cartSliceActions } from "@store/slices/cart";
+import { orderSliceActions } from "@store/slices/order"; 
+import { EOrderPaymentMethod } from "@@types/pizza";
+
 
 export default function CartPageClient() {
   const dispatch = useAppDispatch()
-  const {cart} = useAppSelector(state => state.cart)
-  const { generateOrder, order } = useOrder();
-
+  const { cart } = useAppSelector(state => state.cart)
+  const { order } = useAppSelector(state => state.order);
   const [address, setAddress] = useState("");
   const [userName, setUserName] = useState("");
   const [userNumber, setUserNumber] = useState("");
@@ -21,17 +22,24 @@ export default function CartPageClient() {
   const total = cart.reduce((acc, item) => acc + item.price * item.quantity!, 0);
 
   const handleConfirmOrder = () => {
-    generateOrder(cart, {
-      name: userName,
-      phone: userNumber,
-    }, {
-      street: address,
-      number: "",
-      neighborhood: "",
-      city: "",
-      state: "",
-      zipcode: ""
-    }, paymentMethod as any);
+    dispatch(orderSliceActions.generateOrder({
+      products: cart,
+      user: { name: userName, phone: userNumber },
+      address: {
+        street: address,
+        number: "",
+        neighborhood: "",
+        city: "",
+        state: "",
+        zipcode: ""
+      },
+      paymentMethod:
+        paymentMethod === "dinheiro"
+          ? EOrderPaymentMethod.CASH
+          : paymentMethod === "cartao"
+          ? EOrderPaymentMethod.CREDIT_CARD
+          : EOrderPaymentMethod.PIX,
+    }));
 
     setShowConfirmation(true);
     dispatch(cartSliceActions.clearState())
@@ -123,7 +131,7 @@ export default function CartPageClient() {
 
           <div className="flex gap-2 mt-4">
             <button
-              onClick={()=> dispatch(cartSliceActions.clearState())}
+              onClick={() => dispatch(cartSliceActions.clearState())}
               className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
             >
               Limpar Carrinho

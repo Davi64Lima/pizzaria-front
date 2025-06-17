@@ -7,6 +7,7 @@ import { persistReducer } from 'redux-persist';
 import { ESliceNames } from './slices/types';
 import { cartSliceReducer as cart } from './slices/cart';
 import { pizzaSliceReducer as pizza } from './slices/pizza';
+import { orderSliceReducer as order } from './slices/order';
 // import { newCartSliceReducer as newCart } from './slices/newCart';
 // import { favoriteSliceReducer as favorite } from './slices/favorite';
 // import { wishListSliceReducer as wishList } from './slices/wishList';
@@ -21,6 +22,7 @@ import { pizzaSliceReducer as pizza } from './slices/pizza';
 const combinedReducers = combineReducers({
   cart,
   pizza,
+  order,
 //   newCart,
 //   favorite,
 //   appState,
@@ -45,7 +47,8 @@ export const persistedReducers = () => {
       // WhiteList contains a list of Slices names which can be stored on AsyncStorage
       whitelist: [
         ESliceNames.CART,
-        ESliceNames.PIZZA
+        ESliceNames.PIZZA,
+        ESliceNames.ORDER,
         // ESliceNames.FAVORITE,
         // ESliceNames.APP_STATE,
         // ESliceNames.PROFILE,

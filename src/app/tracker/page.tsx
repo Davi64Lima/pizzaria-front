@@ -5,11 +5,14 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Input } from '@components/ui/input';
 import { Button } from '@components/ui/button';
 import { Label } from '@components/ui/label';
-import { IOrder, useOrder } from '@context/OrderContext'; // Certifique-se de que este caminho está correto
 import { IProduct } from '@@types/pizza';
+import { useAppSelector } from '@hooks/redux/useAppSelector';
+import { useAppDispatch } from '@hooks/redux/useAppDispatch';
+import { IOrder } from '@store/slices/order/types';
 
 export default function TrackerPage() {
-  const { order } = useOrder(); // Pega o pedido do contexto, se houver
+  const { order } = useAppSelector(state => state.order);
+  const dispatch = useAppDispatch()
   const [trackingCode, setTrackingCode] = useState<string>('');
   const [orderStatus, setOrderStatus] = useState<string | null>(null);
   const [foundOrder, setFoundOrder] = useState<IOrder>({} as IOrder); // Para armazenar o pedido encontrado
@@ -24,10 +27,10 @@ export default function TrackerPage() {
       setFoundOrder(order); // Exibe os detalhes do pedido do contexto
     } else if (trackingCode) {
       setOrderStatus('Código de pedido não encontrado.');
-      setFoundOrder(null);
+      setFoundOrder({} as IOrder); // Limpa os detalhes do pedido
     } else {
       setOrderStatus('Por favor, digite um código de pedido.');
-      setFoundOrder(null);
+      setFoundOrder({} as IOrder); // Limpa os detalhes do pedido
     }
   };
 

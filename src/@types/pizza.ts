@@ -53,6 +53,12 @@ export interface IUser {
   password?: string;
 }
 
+export enum EOrderPaymentMethod {
+  CREDIT_CARD = 'credit_card',
+  CASH = 'cash',
+  PIX = 'pix'
+}
+
 export interface IOrderPaymentMethod {
   creditCard?: {
     cardNumber: string;
@@ -64,11 +70,10 @@ export interface IOrderPaymentMethod {
   pix?: boolean;
 }
 
-export interface IOrderStatus {
-  pending: boolean;
-  inProgress: boolean;
-  completed: boolean;
-  canceled: boolean;
-  delivered: boolean;
-  ready: boolean;
+export enum EOrderStatus {
+  PENDING = 'pending',
+  IN_PROGRESS = 'in_progress',
+  COMPLETED = 'completed',
+  CANCELED = 'canceled',
+  DELIVERED = 'delivered',
 }

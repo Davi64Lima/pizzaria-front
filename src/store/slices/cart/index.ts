@@ -45,7 +45,7 @@ export const cartSlice = createSlice({
             }
         },
         clearState: (state)=>{
-            state=initialState
+            state.cart=initialState.cart
         }
         
     }
