@@ -21,10 +21,9 @@ export default function TrackerPage() {
     // Aqui você faria uma chamada à API para buscar o status do pedido
     // usando o 'trackingCode'. Por enquanto, vamos simular.
 
-    // Exemplo de simulação: se o código for '12345' e houver um pedido no contexto, use-o
     if (trackingCode === order.code && order) {
       setOrderStatus('Seu pedido está em preparação!');
-      setFoundOrder(order); // Exibe os detalhes do pedido do contexto
+      setFoundOrder(order); 
     } else if (trackingCode) {
       setOrderStatus('Código de pedido não encontrado.');
       setFoundOrder({} as IOrder); // Limpa os detalhes do pedido
