@@ -1,12 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { flavors } from "@utils/data";
 import { IFlavors } from "@@types/pizza";
 import { pizzaSizes, types } from "@store/slices/pizza/types";
 
 import { Check, ShoppingCart, Plus } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@components/ui/dialog";
 import { Button } from "@components/ui/button";
 import { useRouter } from "next/navigation";
 import { cartSliceActions } from "@store/slices/cart";
@@ -17,10 +22,46 @@ import { useAppDispatch } from "@hooks/redux/useAppDispatch";
 export default function MontarPizzaPage() {
   const [type, setType] = useState(types[0]);
   const [showConfirm, setShowConfirm] = useState(false);
-  const { cart } = useAppSelector(state => state.cart)
-  const {pizza} = useAppSelector(state => state.pizza)
-  const dispatch = useAppDispatch()
+  const { cart } = useAppSelector((state) => state.cart);
+  const { pizza } = useAppSelector((state) => state.pizza);
+  const dispatch = useAppDispatch();
   const router = useRouter();
+
+  const [flavors, setFlavors] = useState({
+    tradicionais: [],
+    especiais: [],
+    doces: [],
+  });
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchFlavors() {
+      try {
+        const res = await fetch("http://localhost:3000/flavors");
+        const data = await res.json();
+
+        // Organiza os sabores por categoria
+        const tradicionais = data.filter(
+          (f: IFlavors) => f.type === "TRADICIONAL"
+        );
+        const especiais = data.filter((f: IFlavors) => f.type === "SPECIAL");
+        const doces = data.filter((f: IFlavors) => f.type === "DOCE");
+
+        setFlavors({ tradicionais, especiais, doces });
+      } catch (err) {
+        console.error("Erro ao buscar sabores:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchFlavors();
+  }, []);
+
+  if (loading) {
+    return <p className="text-center text-xl mt-10">Carregando sabores...</p>;
+  }
 
   const toggleFlavor = (flavor: IFlavors) => {
     if (pizza.flavors?.some((f) => f.id === flavor.id)) {
@@ -30,17 +71,13 @@ export default function MontarPizzaPage() {
     }
   };
 
-  useEffect(()=>{
-    console.log(cart)
-  },[cart])
-
   const confirmPizza = () => {
     if (cart.length === 0) {
-      console.log('create card',pizza)
-      dispatch(cartSliceActions.saveCart([pizza]))
+      console.log("create card", pizza);
+      dispatch(cartSliceActions.saveCart([pizza]));
     } else {
-      console.log('add pizza', pizza)
-       dispatch(cartSliceActions.addToCart(pizza))
+      console.log("add pizza", pizza);
+      dispatch(cartSliceActions.addToCart(pizza));
     }
     setShowConfirm(true);
   };
@@ -101,33 +138,40 @@ export default function MontarPizzaPage() {
       {/* Escolha dos sabores */}
       <section className="space-y-2">
         <h2 className="text-lg font-semibold">
-          Escolha até {pizza.size.flavors} sabor{pizza.size.flavors > 1 && "es"}:
+          Escolha até {pizza.size.flavors} sabor{pizza.size.flavors > 1 && "es"}
+          :
         </h2>
         <div className="grid grid-cols-2 gap-2">
-          {(flavors[type.name as keyof typeof flavors] ?? []).map((flavor) => {
-            const selected = pizza.flavors?.some((f) => f.id === flavor.id);
-            const disabled =
-              !selected && (pizza.flavors?.length ?? 0) >= pizza.size.flavors;
+          {(flavors[type.name as keyof typeof flavors] ?? []).map(
+            (flavor: IFlavors) => {
+              const selected = pizza.flavors?.some((f) => f.id === flavor.id);
+              const disabled =
+                !selected && (pizza.flavors?.length ?? 0) >= pizza.size.flavors;
 
-            return (
-              <button
-                key={flavor.id}
-                onClick={() => toggleFlavor(flavor)}
-                disabled={disabled}
-                className={`text-left p-3 rounded-lg border relative ${
-                  selected
-                    ? "bg-yellow-400 text-black font-semibold"
-                    : "bg-gray-100 text-gray-800"
-                } ${disabled ? "opacity-50 cursor-not-allowed" : "hover:bg-yellow-100 transition"}`}
-              >
-                <div className="flex justify-between items-center mb-1">
-                  <span>{flavor.name}</span>
-                  {selected && <Check size={18} />}
-                </div>
-                <p className="text-xs text-gray-600">{flavor.description}</p>
-              </button>
-            );
-          })}
+              return (
+                <button
+                  key={flavor.id}
+                  onClick={() => toggleFlavor(flavor)}
+                  disabled={disabled}
+                  className={`text-left p-3 rounded-lg border relative ${
+                    selected
+                      ? "bg-yellow-400 text-black font-semibold"
+                      : "bg-gray-100 text-gray-800"
+                  } ${
+                    disabled
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:bg-yellow-100 transition"
+                  }`}
+                >
+                  <div className="flex justify-between items-center mb-1">
+                    <span>{flavor.name}</span>
+                    {selected && <Check size={18} />}
+                  </div>
+                  <p className="text-xs text-gray-600">{flavor.description}</p>
+                </button>
+              );
+            }
+          )}
         </div>
       </section>
 
@@ -144,7 +188,9 @@ export default function MontarPizzaPage() {
         <ShoppingCart size={20} />
         {(pizza.flavors?.length ?? 0) === pizza.size.flavors
           ? "Adicionar ao carrinho"
-          : `Escolha ${pizza.size.flavors - (pizza.flavors?.length ?? 0)} sabor(es)`}
+          : `Escolha ${
+              pizza.size.flavors - (pizza.flavors?.length ?? 0)
+            } sabor(es)`}
       </button>
 
       {/* Modal de Confirmação */}
@@ -154,14 +200,22 @@ export default function MontarPizzaPage() {
             <DialogTitle>✅ Pizza adicionada ao carrinho!</DialogTitle>
           </DialogHeader>
           <div className="space-y-2 text-sm text-gray-700">
-            <p><strong>Tamanho:</strong> {pizza.size.label}</p>
-            <p><strong>Sabores:</strong> {pizza.flavors?.map((f) => f.name).join(", ")}</p>
+            <p>
+              <strong>Tamanho:</strong> {pizza.size.label}
+            </p>
+            <p>
+              <strong>Sabores:</strong>{" "}
+              {pizza.flavors?.map((f) => f.name).join(", ")}
+            </p>
           </div>
           <DialogFooter className="flex gap-2">
             <Button variant="outline" onClick={() => finalize(false)}>
               <Plus size={16} className="mr-1" /> Montar outra
             </Button>
-            <Button onClick={() => finalize(true)} className="bg-yellow-500 text-black hover:bg-yellow-400">
+            <Button
+              onClick={() => finalize(true)}
+              className="bg-yellow-500 text-black hover:bg-yellow-400"
+            >
               <ShoppingCart size={16} className="mr-1" /> Ir para o carrinho
             </Button>
           </DialogFooter>

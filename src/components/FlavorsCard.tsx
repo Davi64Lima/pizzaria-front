@@ -1,27 +1,27 @@
 "use client";
 
-import Image from 'next/image';
-import pizzaPng from '@assets/pizza.jpg';
-import { IFlavors } from '@@types/pizza';
-import { useRouter } from 'next/navigation';
+import Image from "next/image";
+import pizzaPng from "@assets/pizza.jpg";
+import { IFlavors } from "@@types/pizza";
+import { useRouter } from "next/navigation";
 
-
-import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@components/ui/card';
-import { Button } from '@components/ui/button'; // Se você for usar botões dentro do card
-import { useAppSelector } from '@hooks/redux/useAppSelector';
-import { useAppDispatch } from '@hooks/redux/useAppDispatch';
-import { pizzaSliceActions } from '@store/slices/pizza';
-
-interface FlavorCardProps {
-  flavor: IFlavors;
-}
-
+import {
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@components/ui/card";
+import { Button } from "@components/ui/button"; // Se você for usar botões dentro do card
+import { useAppSelector } from "@hooks/redux/useAppSelector";
+import { useAppDispatch } from "@hooks/redux/useAppDispatch";
+import { pizzaSliceActions } from "@store/slices/pizza";
 
 export function FlavorCard({ flavor }: { flavor: IFlavors }) {
   const router = useRouter();
-  const {pizza} = useAppSelector(state => state.pizza)
-  const dispatch = useAppDispatch()
-  
+  const { pizza } = useAppSelector((state) => state.pizza);
+  const dispatch = useAppDispatch();
+
   return (
     <Card className="flex flex-col h-full hover:shadow-lg transition-shadow duration-200">
       <CardHeader className="flex-grow">
@@ -33,9 +33,12 @@ export function FlavorCard({ flavor }: { flavor: IFlavors }) {
             width={400}
             height={300}
             className="object-cover hover:scale-105 transition-transform rounded-2xl duration-300"
-          />}
+          />
+        }
         <CardTitle className="text-xl font-semibold">{flavor.name}</CardTitle>
-        <CardDescription className="text-gray-600 mt-2">{flavor.description}</CardDescription>
+        <CardDescription className="text-gray-600 mt-2">
+          {flavor.description}
+        </CardDescription>
       </CardHeader>
 
       <CardFooter className="mt-auto">
@@ -43,19 +46,20 @@ export function FlavorCard({ flavor }: { flavor: IFlavors }) {
         <Button
           onClick={() => {
             if (pizza.flavors && pizza.flavors.length < pizza.size.flavors) {
-              dispatch(pizzaSliceActions.addToPizza(flavor))
+              dispatch(pizzaSliceActions.addToPizza(flavor));
             }
-            router.push('/mount')
+            router.push("/mount");
           }}
           className="group relative mt-4 w-full bg-yellow-500 text-black font-semibold py-2 rounded-xl hover:bg-yellow-400 active:scale-95 transition-all"
-
-        >          <span className="block group-hover:hidden">
+        >
+          {" "}
+          <span className="block group-hover:hidden">
             A partir de R$ {(flavor.prices.middle / 100).toFixed(2)}
           </span>
           <span className="hidden group-hover:block">
             {pizza.flavors && pizza.flavors.length < pizza.size.flavors
-              ? 'Adicionar à Pizza'
-              : 'Limite de sabores atingido'}
+              ? "Adicionar à Pizza"
+              : "Limite de sabores atingido"}
           </span>
         </Button>
       </CardFooter>

@@ -16,21 +16,25 @@ export interface IPizza extends IProduct {
 
 export interface IFlavors {
   id: number;
+  uuid: string;
+  type: "TRADICIONAL" | "SPECIAL" | "DOCE";
+  image?: string;
   name: string;
-  description : string;
-  quantity?: number
-  prices : {
+  slug: string;
+  description: string;
+  quantity?: number;
+  prices: {
     middle: number;
     large: number;
-    family: number
-  }
+    family: number;
+  };
 }
 
 export type TPizzaSize = {
-    label: string;
-    value: string;
-    flavors: number;
-}
+  label: string;
+  value: string;
+  flavors: number;
+};
 
 export interface IAddress {
   street: string;
@@ -54,9 +58,9 @@ export interface IUser {
 }
 
 export enum EOrderPaymentMethod {
-  CREDIT_CARD = 'credit_card',
-  CASH = 'cash',
-  PIX = 'pix'
+  CREDIT_CARD = "credit_card",
+  CASH = "cash",
+  PIX = "pix",
 }
 
 export interface IOrderPaymentMethod {
@@ -71,9 +75,9 @@ export interface IOrderPaymentMethod {
 }
 
 export enum EOrderStatus {
-  PENDING = 'pending',
-  IN_PROGRESS = 'in_progress',
-  COMPLETED = 'completed',
-  CANCELED = 'canceled',
-  DELIVERED = 'delivered',
+  PENDING = "pending",
+  IN_PROGRESS = "in_progress",
+  COMPLETED = "completed",
+  CANCELED = "canceled",
+  DELIVERED = "delivered",
 }
