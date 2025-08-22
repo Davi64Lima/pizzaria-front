@@ -1,17 +1,24 @@
-// src/app/login/page.tsx
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@components/ui/card';
-import { Input } from '@components/ui/input';
-import { Label } from '@components/ui/label';
-import { Button } from '@components/ui/button';
-import { Loader2 } from 'lucide-react'; // Importar ícone de loading
+import React, { useState } from "react";
+import Link from "next/link";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@components/ui/card";
+import { Input } from "@components/ui/input";
+import { Label } from "@components/ui/label";
+import { Button } from "@components/ui/button";
+import { Loader2 } from "lucide-react";
+import { api } from "@service/api";
+import { setTokenInCoockies } from "@app/api/auth/login";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,25 +27,18 @@ export default function LoginPage() {
     setIsLoading(true);
     setError(null); // Limpa erros anteriores
 
-    // Simulação de chamada de API
-    // Em um projeto real, você faria uma chamada para o seu backend aqui
-    // Ex: const response = await fetch('/api/login', { method: 'POST', body: JSON.stringify({ email, password }) });
-    // const data = await response.json();
-
     try {
-      // Simula uma requisição assíncrona
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const response = await api.post(`/auth/login`, {
+        email,
+        password,
+      });
 
-      if (email === 'teste@exemplo.com' && password === '123456') {
-        // Redirecionar para a dashboard ou página inicial após o login
-        console.log('Login bem-sucedido!');
-        // router.push('/dashboard'); // Usaria o useRouter do next/navigation
-      } else {
-        setError('Email ou senha inválidos.');
-      }
+      await setTokenInCoockies(response);
+
+      console.log(response);
     } catch (err) {
-      setError('Ocorreu um erro ao tentar fazer login. Tente novamente.');
-      console.error('Erro de login:', err);
+      setError("Ocorreu um erro ao tentar fazer login. Tente novamente.");
+      console.error("Erro de login:", err);
     } finally {
       setIsLoading(false);
     }
@@ -48,7 +48,9 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4">
       <Card className="w-full max-w-md p-6 shadow-lg">
         <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-bold text-gray-800">Entrar</CardTitle>
+          <CardTitle className="text-3xl font-bold text-gray-800">
+            Entrar
+          </CardTitle>
           <CardDescription className="text-gray-600 mt-2">
             Acesse sua conta para gerenciar seus pedidos.
           </CardDescription>
@@ -69,7 +71,10 @@ export default function LoginPage() {
             <div className="grid gap-2">
               <div className="flex items-center">
                 <Label htmlFor="password">Senha</Label>
-                <Link href="#" className="ml-auto inline-block text-sm underline text-blue-600 hover:text-blue-700">
+                <Link
+                  href="#"
+                  className="ml-auto inline-block text-sm underline text-blue-600 hover:text-blue-700"
+                >
                   Esqueceu sua senha?
                 </Link>
               </div>
@@ -81,7 +86,9 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
-            {error && <p className="text-red-500 text-sm mt-2 text-center">{error}</p>}
+            {error && (
+              <p className="text-red-500 text-sm mt-2 text-center">{error}</p>
+            )}
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? (
                 <>
@@ -89,13 +96,16 @@ export default function LoginPage() {
                   Entrando...
                 </>
               ) : (
-                'Entrar'
+                "Entrar"
               )}
             </Button>
           </form>
           <div className="mt-4 text-center text-sm text-gray-600">
-            Não tem uma conta?{' '}
-            <Link href="/auth/register" className="underline text-blue-600 hover:text-blue-700">
+            Não tem uma conta?{" "}
+            <Link
+              href="/auth/register"
+              className="underline text-blue-600 hover:text-blue-700"
+            >
               Registrar-se
             </Link>
           </div>

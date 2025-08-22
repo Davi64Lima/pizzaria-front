@@ -1,4 +1,5 @@
 "use client";
+import "dotenv/config";
 
 import "./globals.css";
 import { Provider } from "react-redux";
