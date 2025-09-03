@@ -8,6 +8,12 @@ import {
   IUser,
 } from "./types";
 import { api } from "@service/api";
+import {
+  setAuthTokens,
+  getAuthToken,
+  getRefreshToken,
+  clearAuthTokens,
+} from "@utils/cookies";
 
 // Tipo para erros da API
 interface ApiError {
@@ -37,11 +43,8 @@ export const loginUser = createAsyncThunk(
         credentials
       );
 
-      // Salvar token no localStorage
-      localStorage.setItem("token", response.data.access_token);
-      if (response.data.refresh_token) {
-        localStorage.setItem("refreshToken", response.data.refresh_token);
-      }
+      // Salvar tokens nos cookies
+      setAuthTokens(response.data.access_token, response.data.refresh_token);
 
       return response.data;
     } catch (error: unknown) {
@@ -62,11 +65,8 @@ export const registerUser = createAsyncThunk(
         userData
       );
 
-      // Salvar token no localStorage
-      localStorage.setItem("token", response.data.access_token);
-      if (response.data.refresh_token) {
-        localStorage.setItem("refreshToken", response.data.refresh_token);
-      }
+      // Salvar tokens nos cookies
+      setAuthTokens(response.data.access_token, response.data.refresh_token);
 
       return response.data;
     } catch (error: unknown) {
@@ -82,7 +82,7 @@ export const loadUserFromToken = createAsyncThunk(
   "auth/loadFromToken",
   async (_, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = getAuthToken();
       if (!token) {
         return rejectWithValue("Token não encontrado");
       }
@@ -94,9 +94,8 @@ export const loadUserFromToken = createAsyncThunk(
 
       return { user: response.data.user, access_token: token };
     } catch (error: unknown) {
-      // Token inválido, remover do localStorage
-      localStorage.removeItem("token");
-      localStorage.removeItem("refreshToken");
+      // Token inválido, remover dos cookies
+      clearAuthTokens();
       const apiError = error as ApiError;
       const message = apiError?.response?.data?.message || "Token inválido";
       return rejectWithValue(message);
@@ -108,8 +107,8 @@ export const refreshToken = createAsyncThunk(
   "auth/refreshToken",
   async (_, { rejectWithValue }) => {
     try {
-      const refreshToken = localStorage.getItem("refreshToken");
-      if (!refreshToken) {
+      const refreshTokenValue = getRefreshToken();
+      if (!refreshTokenValue) {
         return rejectWithValue("Refresh token não encontrado");
       }
 
@@ -117,18 +116,14 @@ export const refreshToken = createAsyncThunk(
         access_token: string;
         refresh_token?: string;
       }>("/auth/refresh", {
-        refresh_token: refreshToken,
+        refresh_token: refreshTokenValue,
       });
 
-      localStorage.setItem("token", response.data.access_token);
-      if (response.data.refresh_token) {
-        localStorage.setItem("refreshToken", response.data.refresh_token);
-      }
+      setAuthTokens(response.data.access_token, response.data.refresh_token);
 
       return response.data.access_token;
     } catch (error: unknown) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("refreshToken");
+      clearAuthTokens();
       const apiError = error as ApiError;
       const message =
         apiError?.response?.data?.message || "Erro ao renovar token";
@@ -148,9 +143,8 @@ export const authSlice = createSlice({
       state.isAuthenticated = false;
       state.error = null;
 
-      // Remover tokens do localStorage
-      localStorage.removeItem("token");
-      localStorage.removeItem("refreshToken");
+      // Remover tokens dos cookies
+      clearAuthTokens();
     },
     clearError: (state) => {
       state.error = null;

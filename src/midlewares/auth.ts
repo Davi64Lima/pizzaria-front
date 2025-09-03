@@ -2,6 +2,7 @@ import { InternalAxiosRequestConfig, AxiosResponse, AxiosError } from "axios";
 import { api } from "@service/api";
 import { store } from "@store";
 import { refreshToken, logout } from "@store/slices/auth";
+import { getAuthToken } from "@utils/cookies";
 
 // Interceptador para adicionar token automaticamente
 export const setupAuthInterceptors = () => {
@@ -9,7 +10,7 @@ export const setupAuthInterceptors = () => {
   api.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
       const state = store.getState();
-      const token = state.auth.token || localStorage.getItem("token");
+      const token = state.auth.token || getAuthToken();
 
       if (token && config.headers) {
         config.headers.Authorization = `Bearer ${token}`;
@@ -99,5 +100,5 @@ export const getCurrentUser = () => {
 // Hook para obter o token atual
 export const getCurrentToken = (): string | null => {
   const state = store.getState();
-  return state.auth.token || localStorage.getItem("token");
+  return state.auth.token || getAuthToken();
 };
