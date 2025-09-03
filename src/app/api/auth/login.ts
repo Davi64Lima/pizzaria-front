@@ -1,7 +1,9 @@
-import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 
 export const setTokenInCoockies = async (access_token: any) => {
-  (await cookies()).set({
+  const response = NextResponse.json({ success: true });
+
+  response.cookies.set({
     name: "token",
     value: access_token,
     httpOnly: true,

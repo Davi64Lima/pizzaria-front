@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState } from "react";
 import Link from "next/link";
 import {
@@ -15,6 +13,7 @@ import { Button } from "@components/ui/button";
 import { Loader2 } from "lucide-react";
 import { api } from "@service/api";
 import { setTokenInCoockies } from "@app/api/auth/login";
+import { cookies } from "next/headers";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -27,15 +26,19 @@ export default function LoginPage() {
     setIsLoading(true);
     setError(null); // Limpa erros anteriores
 
+    console.log(email, password);
+
     try {
       const response = await api.post(`/auth/login`, {
         email,
         password,
       });
 
-      await setTokenInCoockies(response);
-
-      console.log(response);
+      await setTokenInCoockies(response.data.access_token);
+      const cookieStore = await cookies();
+      const token = cookieStore.get("token");
+      console.log(token);
+      console.log(response.data.access_token);
     } catch (err) {
       setError("Ocorreu um erro ao tentar fazer login. Tente novamente.");
       console.error("Erro de login:", err);
