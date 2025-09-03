@@ -7,6 +7,7 @@ import { useKeenSlider } from "keen-slider/react";
 import { ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { IFlavors } from "@@types/pizza";
+import { api } from "@service/api";
 
 export default function HomePageClient() {
   const [flavors, setFlavors] = useState<IFlavors[]>([]);
@@ -30,9 +31,8 @@ export default function HomePageClient() {
   useEffect(() => {
     async function fetchFlavors() {
       try {
-        const res = await fetch("http://localhost:3000/flavors");
-        const data = await res.json();
-        setFlavors(data);
+        const response = await api.get("/flavors");
+        setFlavors(response.data);
       } catch (err) {
         console.error("Erro ao buscar sabores:", err);
       }

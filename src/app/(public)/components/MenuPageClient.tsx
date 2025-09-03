@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@components/ui/tabs";
 import { FlavorCard } from "@components/FlavorsCard";
 import { IFlavors } from "@@types/pizza";
+import { api } from "@service/api";
 
 export default function MenuPageClient() {
   const [flavors, setFlavors] = useState({
@@ -17,8 +18,8 @@ export default function MenuPageClient() {
   useEffect(() => {
     async function fetchFlavors() {
       try {
-        const res = await fetch("http://localhost:3000/flavors");
-        const data = await res.json();
+        const response = await api.get("/flavors");
+        const data = response.data;
 
         // Organiza os sabores por categoria
         const tradicionais = data.filter(
@@ -48,7 +49,8 @@ export default function MenuPageClient() {
         Vamos montar seu pedido!
       </h1>
       <p className="text-xl mb-10 text-gray-700">
-        Escolha entre nossos deliciosos sabores ou monte sua pizza personalizada.
+        Escolha entre nossos deliciosos sabores ou monte sua pizza
+        personalizada.
       </p>
 
       <Tabs defaultValue="tradicionais" className="w-full">

@@ -1,15 +1,12 @@
-import axios, {
-  InternalAxiosRequestConfig,
-  AxiosResponse,
-  AxiosError,
-} from "axios";
+import { InternalAxiosRequestConfig, AxiosResponse, AxiosError } from "axios";
+import { api } from "@service/api";
 import { store } from "@store";
 import { refreshToken, logout } from "@store/slices/auth";
 
 // Interceptador para adicionar token automaticamente
 export const setupAuthInterceptors = () => {
   // Request interceptor - adiciona token em todas as requests
-  axios.interceptors.request.use(
+  api.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
       const state = store.getState();
       const token = state.auth.token || localStorage.getItem("token");
@@ -20,13 +17,13 @@ export const setupAuthInterceptors = () => {
 
       return config;
     },
-    (error) => {
+    (error: AxiosError) => {
       return Promise.reject(error);
     }
   );
 
   // Response interceptor - lida com erros de autenticação
-  axios.interceptors.response.use(
+  api.interceptors.response.use(
     (response: AxiosResponse) => {
       return response;
     },
@@ -50,7 +47,7 @@ export const setupAuthInterceptors = () => {
               originalRequest.headers.Authorization = `Bearer ${newToken}`;
             }
 
-            return axios(originalRequest);
+            return api(originalRequest);
           } else {
             // Falha ao renovar token, fazer logout
             store.dispatch(logout());
