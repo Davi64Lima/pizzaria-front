@@ -13,7 +13,10 @@ const combinedReducers = combineReducers({
   order,
 });
 
-const reducerProxy = (state: any, action: AnyAction) => {
+const reducerProxy = (
+  state: ReturnType<typeof combinedReducers> | undefined,
+  action: AnyAction
+) => {
   return combinedReducers(state, action);
 };
 

@@ -1,9 +1,5 @@
-"use client";
-import "dotenv/config";
-
 import "./globals.css";
-import { Provider } from "react-redux";
-import { store } from "@store";
+import { ReduxProvider } from "@components/providers/ReduxProvider";
 
 export default function RootLayout({
   children,
@@ -13,9 +9,9 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body>
-        <Provider store={store}>
+        <ReduxProvider>
           <main className="flex-1">{children}</main>
-        </Provider>
+        </ReduxProvider>
       </body>
     </html>
   );

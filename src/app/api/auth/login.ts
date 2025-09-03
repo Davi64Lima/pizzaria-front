@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-export const setTokenInCoockies = async (access_token: any) => {
+export const setTokenInCoockies = async (access_token: string) => {
   const response = NextResponse.json({ success: true });
 
   response.cookies.set({

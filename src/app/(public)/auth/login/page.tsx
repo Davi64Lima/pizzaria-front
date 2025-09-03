@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import Link from "next/link";
 import {
@@ -12,8 +14,6 @@ import { Label } from "@components/ui/label";
 import { Button } from "@components/ui/button";
 import { Loader2 } from "lucide-react";
 import { api } from "@service/api";
-import { setTokenInCoockies } from "@app/api/auth/login";
-import { cookies } from "next/headers";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -34,11 +34,12 @@ export default function LoginPage() {
         password,
       });
 
-      await setTokenInCoockies(response.data.access_token);
-      const cookieStore = await cookies();
-      const token = cookieStore.get("token");
-      console.log(token);
-      console.log(response.data.access_token);
+      // Armazenar token no localStorage ao invés de cookies no client
+      localStorage.setItem("token", response.data.access_token);
+      console.log("Login realizado com sucesso");
+
+      // Redirecionar para dashboard ou página inicial
+      window.location.href = "/";
     } catch (err) {
       setError("Ocorreu um erro ao tentar fazer login. Tente novamente.");
       console.error("Erro de login:", err);
