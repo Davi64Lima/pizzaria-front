@@ -40,6 +40,24 @@ export const registerUser = createAsyncThunk(
   }
 );
 
+export const loadUserFromSession = createAsyncThunk(
+  "auth/loadFromSession",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await fetch("/api/auth/session", {
+        credentials: "include",
+      });
+      if (!response.ok) {
+        return rejectWithValue("Nenhuma sessão ativa");
+      }
+      const data = await response.json();
+      return { user: data.user, access_token: "stored-in-httponly-cookie" };
+    } catch {
+      return rejectWithValue("Erro ao carregar sessão");
+    }
+  }
+);
+
 export const logoutUser = createAsyncThunk("auth/logout", async () => {
   await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
   return true;
@@ -98,6 +116,24 @@ const authSlice = createSlice({
       .addCase(registerUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
+      })
+      .addCase(loadUserFromSession.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(loadUserFromSession.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload.user;
+        state.token = action.payload.access_token;
+        state.isAuthenticated = true;
+        state.error = null;
+      })
+      .addCase(loadUserFromSession.rejected, (state) => {
+        state.isLoading = false;
+        state.user = null;
+        state.token = null;
+        state.isAuthenticated = false;
+        state.error = null;
       })
       .addCase(logoutUser.fulfilled, (state) => {
         state.user = null;
