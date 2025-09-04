@@ -1,57 +1,22 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { ESliceNames } from "../types";
-import {
-  IAuthState,
-  ILoginRequest,
-  IRegisterRequest,
-  IAuthResponse,
-  IUser,
-} from "./types";
-import { api } from "@service/api";
-import {
-  setAuthTokens,
-  getAuthToken,
-  getRefreshToken,
-  clearAuthTokens,
-} from "@utils/cookies";
+import { IAuthState, ILoginRequest, IRegisterRequest } from "./types";
 
-// Tipo para erros da API
-interface ApiError {
-  response?: {
-    data?: {
-      message?: string;
-    };
-  };
-}
-
-// Estado inicial
-const initialState: IAuthState = {
-  user: null,
-  token: null,
-  isAuthenticated: false,
-  isLoading: false,
-  error: null,
-};
-
-// Thunks assíncronos
 export const loginUser = createAsyncThunk(
   "auth/login",
   async (credentials: ILoginRequest, { rejectWithValue }) => {
     try {
-      const response = await api.post<IAuthResponse>(
-        "/auth/login",
-        credentials
-      );
-
-      // Salvar tokens nos cookies
-      setAuthTokens(response.data.access_token, response.data.refresh_token);
-
-      return response.data;
-    } catch (error: unknown) {
-      const apiError = error as ApiError;
-      const message =
-        apiError?.response?.data?.message || "Erro ao fazer login";
-      return rejectWithValue(message);
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(credentials),
+      });
+      const data = await response.json();
+      if (!response.ok)
+        return rejectWithValue(data.error || "Erro ao fazer login");
+      return { user: data.user, access_token: "stored-in-httponly-cookie" };
+    } catch {
+      return rejectWithValue("Erro ao fazer login");
     }
   }
 );
@@ -60,80 +25,35 @@ export const registerUser = createAsyncThunk(
   "auth/register",
   async (userData: IRegisterRequest, { rejectWithValue }) => {
     try {
-      const response = await api.post<IAuthResponse>(
-        "/auth/register",
-        userData
-      );
-
-      // Salvar tokens nos cookies
-      setAuthTokens(response.data.access_token, response.data.refresh_token);
-
-      return response.data;
-    } catch (error: unknown) {
-      const apiError = error as ApiError;
-      const message =
-        apiError?.response?.data?.message || "Erro ao criar conta";
-      return rejectWithValue(message);
-    }
-  }
-);
-
-export const loadUserFromToken = createAsyncThunk(
-  "auth/loadFromToken",
-  async (_, { rejectWithValue }) => {
-    try {
-      const token = getAuthToken();
-      if (!token) {
-        return rejectWithValue("Token não encontrado");
-      }
-
-      // Verificar se o token é válido fazendo uma request para o backend
-      const response = await api.get<{ user: IUser }>("/auth/me", {
-        headers: { Authorization: `Bearer ${token}` },
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userData),
       });
-
-      return { user: response.data.user, access_token: token };
-    } catch (error: unknown) {
-      // Token inválido, remover dos cookies
-      clearAuthTokens();
-      const apiError = error as ApiError;
-      const message = apiError?.response?.data?.message || "Token inválido";
-      return rejectWithValue(message);
+      const data = await response.json();
+      if (!response.ok)
+        return rejectWithValue(data.error || "Erro ao registrar usuário");
+      return { user: data.user, access_token: "stored-in-httponly-cookie" };
+    } catch {
+      return rejectWithValue("Erro ao registrar usuário");
     }
   }
 );
 
-export const refreshToken = createAsyncThunk(
-  "auth/refreshToken",
-  async (_, { rejectWithValue }) => {
-    try {
-      const refreshTokenValue = getRefreshToken();
-      if (!refreshTokenValue) {
-        return rejectWithValue("Refresh token não encontrado");
-      }
+export const logoutUser = createAsyncThunk("auth/logout", async () => {
+  await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
+  return true;
+});
 
-      const response = await api.post<{
-        access_token: string;
-        refresh_token?: string;
-      }>("/auth/refresh", {
-        refresh_token: refreshTokenValue,
-      });
+const initialState: IAuthState = {
+  user: null,
+  token: null,
+  isAuthenticated: false,
+  isLoading: false,
+  error: null,
+};
 
-      setAuthTokens(response.data.access_token, response.data.refresh_token);
-
-      return response.data.access_token;
-    } catch (error: unknown) {
-      clearAuthTokens();
-      const apiError = error as ApiError;
-      const message =
-        apiError?.response?.data?.message || "Erro ao renovar token";
-      return rejectWithValue(message);
-    }
-  }
-);
-
-// Slice
-export const authSlice = createSlice({
+const authSlice = createSlice({
   name: ESliceNames.AUTH,
   initialState,
   reducers: {
@@ -142,23 +62,12 @@ export const authSlice = createSlice({
       state.token = null;
       state.isAuthenticated = false;
       state.error = null;
-
-      // Remover tokens dos cookies
-      clearAuthTokens();
     },
     clearError: (state) => {
       state.error = null;
     },
-    setUser: (state, action: PayloadAction<IUser>) => {
-      state.user = action.payload;
-      state.isAuthenticated = true;
-    },
-    setToken: (state, action: PayloadAction<string>) => {
-      state.token = action.payload;
-    },
   },
   extraReducers: (builder) => {
-    // Login
     builder
       .addCase(loginUser.pending, (state) => {
         state.isLoading = true;
@@ -174,11 +83,7 @@ export const authSlice = createSlice({
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
-        state.isAuthenticated = false;
-      });
-
-    // Register
-    builder
+      })
       .addCase(registerUser.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -193,43 +98,17 @@ export const authSlice = createSlice({
       .addCase(registerUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
-        state.isAuthenticated = false;
-      });
-
-    // Load user from token
-    builder
-      .addCase(loadUserFromToken.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
       })
-      .addCase(loadUserFromToken.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.user = action.payload.user;
-        state.token = action.payload.access_token;
-        state.isAuthenticated = true;
-        state.error = null;
-      })
-      .addCase(loadUserFromToken.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload as string;
-        state.isAuthenticated = false;
-        state.user = null;
-        state.token = null;
-      });
-
-    // Refresh token
-    builder
-      .addCase(refreshToken.fulfilled, (state, action) => {
-        state.token = action.payload;
-      })
-      .addCase(refreshToken.rejected, (state) => {
+      .addCase(logoutUser.fulfilled, (state) => {
         state.user = null;
         state.token = null;
         state.isAuthenticated = false;
+        state.error = null;
+        state.isLoading = false;
       });
   },
 });
 
-export const { logout, clearError, setUser, setToken } = authSlice.actions;
-export const authSliceActions = authSlice.actions;
+export const { logout, clearError } = authSlice.actions;
 export const authSliceReducer = authSlice.reducer;
+export default authSlice.reducer;

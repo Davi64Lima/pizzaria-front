@@ -1,8 +1,7 @@
 import { InternalAxiosRequestConfig, AxiosResponse, AxiosError } from "axios";
 import { api } from "@service/api";
 import { store } from "@store";
-import { refreshToken, logout } from "@store/slices/auth";
-import { getAuthToken } from "@utils/cookies";
+import { logout } from "@store/slices/auth";
 
 // Interceptador para adicionar token automaticamente
 export const setupAuthInterceptors = () => {
@@ -10,7 +9,7 @@ export const setupAuthInterceptors = () => {
   api.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
       const state = store.getState();
-      const token = state.auth.token || getAuthToken();
+      const token = state.auth.token;
 
       if (token && config.headers) {
         config.headers.Authorization = `Bearer ${token}`;
@@ -29,48 +28,17 @@ export const setupAuthInterceptors = () => {
       return response;
     },
     async (error: AxiosError) => {
-      const originalRequest = error.config as InternalAxiosRequestConfig & {
-        _retry?: boolean;
-      };
+      // Se erro 401 (Unauthorized), fazer logout
+      if (error.response?.status === 401) {
+        // Fazer logout
+        store.dispatch(logout());
 
-      // Se erro 401 (Unauthorized) e não é uma retry
-      if (error.response?.status === 401 && !originalRequest._retry) {
-        originalRequest._retry = true;
-
-        try {
-          // Tentar renovar o token
-          const result = await store.dispatch(refreshToken());
-
-          if (refreshToken.fulfilled.match(result)) {
-            // Token renovado com sucesso, repetir a request original
-            const newToken = result.payload;
-            if (originalRequest.headers) {
-              originalRequest.headers.Authorization = `Bearer ${newToken}`;
-            }
-
-            return api(originalRequest);
-          } else {
-            // Falha ao renovar token, fazer logout
-            store.dispatch(logout());
-
-            // Redirecionar para login se não estiver já lá
-            if (
-              typeof window !== "undefined" &&
-              !window.location.pathname.includes("/auth/login")
-            ) {
-              window.location.href = "/auth/login";
-            }
-          }
-        } catch {
-          // Erro ao renovar token, fazer logout
-          store.dispatch(logout());
-
-          if (
-            typeof window !== "undefined" &&
-            !window.location.pathname.includes("/auth/login")
-          ) {
-            window.location.href = "/auth/login";
-          }
+        // Redirecionar para login se não estiver já lá
+        if (
+          typeof window !== "undefined" &&
+          !window.location.pathname.includes("/auth/login")
+        ) {
+          window.location.href = "/auth/login";
         }
       }
 
@@ -100,5 +68,5 @@ export const getCurrentUser = () => {
 // Hook para obter o token atual
 export const getCurrentToken = (): string | null => {
   const state = store.getState();
-  return state.auth.token || getAuthToken();
+  return state.auth.token;
 };

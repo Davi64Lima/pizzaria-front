@@ -15,12 +15,16 @@ import { useAppSelector } from "@hooks/redux/useAppSelector";
 import { useAppDispatch } from "@hooks/redux/useAppDispatch";
 import { logout } from "@store/slices/auth";
 import { UserRole } from "@store/slices/auth/types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function HeaderClient() {
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    console.log(user);
+  }, [user]);
 
   const handleLogout = () => {
     dispatch(logout());

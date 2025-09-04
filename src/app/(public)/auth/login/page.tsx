@@ -16,7 +16,7 @@ import { Button } from "@components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useAppDispatch } from "@hooks/redux/useAppDispatch";
 import { useAppSelector } from "@hooks/redux/useAppSelector";
-import { loginUser, clearError } from "@store/slices/auth";
+import { loginUser, clearError } from "@store/slices/auth/index";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
