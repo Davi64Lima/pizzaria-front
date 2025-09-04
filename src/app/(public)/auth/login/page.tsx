@@ -1,5 +1,8 @@
-import React, { useState } from "react";
+"use client";
+
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -11,42 +14,49 @@ import { Input } from "@components/ui/input";
 import { Label } from "@components/ui/label";
 import { Button } from "@components/ui/button";
 import { Loader2 } from "lucide-react";
-import { api } from "@service/api";
-import { setTokenInCoockies } from "@app/api/auth/login";
-import { cookies } from "next/headers";
+import { useAppDispatch } from "@hooks/redux/useAppDispatch";
+import { useAppSelector } from "@hooks/redux/useAppSelector";
+import { loginUser, clearError } from "@store/slices/auth/index";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+
+  const dispatch = useAppDispatch();
+  const { isLoading, error, isAuthenticated } = useAppSelector(
+    (state) => state.auth
+  );
+
+  // Redirecionar se já estiver autenticado
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/");
+    }
+  }, [isAuthenticated, router]);
+
+  // Limpar erro quando componente for desmontado
+  useEffect(() => {
+    return () => {
+      dispatch(clearError());
+    };
+  }, [dispatch]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError(null); // Limpa erros anteriores
 
-    console.log(email, password);
-
-    try {
-      const response = await api.post(`/auth/login`, {
-        email,
-        password,
-      });
-
-      await setTokenInCoockies(response.data.access_token);
-      const cookieStore = await cookies();
-      const token = cookieStore.get("token");
-      console.log(token);
-      console.log(response.data.access_token);
-    } catch (err) {
-      setError("Ocorreu um erro ao tentar fazer login. Tente novamente.");
-      console.error("Erro de login:", err);
-    } finally {
-      setIsLoading(false);
+    if (!email || !password) {
+      return;
     }
-  };
 
+    const result = await dispatch(loginUser({ email, password }));
+
+    if (loginUser.fulfilled.match(result)) {
+      // Login bem-sucedido, redirecionar
+      router.push("/");
+    }
+    // Se houver erro, será exibido automaticamente pelo estado do Redux
+  };
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4">
       <Card className="w-full max-w-md p-6 shadow-lg">

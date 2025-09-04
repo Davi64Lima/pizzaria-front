@@ -3,17 +3,22 @@ import storage from "redux-persist/lib/storage";
 
 import { persistReducer } from "redux-persist";
 import { ESliceNames } from "./slices/types";
+import { authSliceReducer as auth } from "./slices/auth";
 import { cartSliceReducer as cart } from "./slices/cart";
 import { pizzaSliceReducer as pizza } from "./slices/pizza";
 import { orderSliceReducer as order } from "./slices/order";
 
 const combinedReducers = combineReducers({
+  auth,
   cart,
   pizza,
   order,
 });
 
-const reducerProxy = (state: any, action: AnyAction) => {
+const reducerProxy = (
+  state: ReturnType<typeof combinedReducers> | undefined,
+  action: AnyAction
+) => {
   return combinedReducers(state, action);
 };
 

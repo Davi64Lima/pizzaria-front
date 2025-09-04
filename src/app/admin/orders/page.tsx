@@ -1,6 +1,4 @@
 // app/admin/orders/page.tsx
-"use client";
-
 import React from "react";
 
 const statuses = [
@@ -39,7 +37,9 @@ export default function OrdersPage() {
                     className="p-3 rounded border bg-gray-50 hover:bg-gray-100 transition"
                   >
                     <p className="font-medium">Pedido #{order.id}</p>
-                    <p className="text-sm text-gray-600">Cliente: {order.client}</p>
+                    <p className="text-sm text-gray-600">
+                      Cliente: {order.client}
+                    </p>
                   </div>
                 ))
               )}

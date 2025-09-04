@@ -1,137 +1,238 @@
-// src/app/register/page.tsx
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@components/ui/card';
-import { Input } from '@components/ui/input';
-import { Label } from '@components/ui/label';
-import { Button } from '@components/ui/button';
-import { Loader2 } from 'lucide-react'; // Importar ícone de loading
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@components/ui/card";
+import { Input } from "@components/ui/input";
+import { Label } from "@components/ui/label";
+import { Button } from "@components/ui/button";
+import { Loader2 } from "lucide-react";
+import { useAppDispatch } from "@hooks/redux/useAppDispatch";
+import { useAppSelector } from "@hooks/redux/useAppSelector";
+import { registerUser, clearError } from "@store/slices/auth";
 
 export default function RegisterPage() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [localError, setLocalError] = useState<string | null>(null);
+
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const { isLoading, error, isAuthenticated } = useAppSelector(
+    (state) => state.auth
+  );
+
+  // Redirecionar se já estiver autenticado
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/");
+    }
+  }, [isAuthenticated, router]);
+
+  // Limpar erro quando componente for desmontado
+  useEffect(() => {
+    return () => {
+      dispatch(clearError());
+    };
+  }, [dispatch]);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError(null); // Limpa erros anteriores
-    setSuccess(null); // Limpa mensagens de sucesso anteriores
+    setLocalError(null);
 
-    if (password !== confirmPassword) {
-      setError('As senhas não coincidem.');
-      setIsLoading(false);
+    // Validações locais
+    if (!name || !email || !password) {
+      setLocalError("Todos os campos obrigatórios devem ser preenchidos.");
       return;
     }
 
-    // Em um projeto real, você faria uma chamada para o seu backend aqui
-    // Ex: const response = await fetch('/api/register', { method: 'POST', body: JSON.stringify({ name, email, password }) });
-    // const data = await response.json();
-
-    try {
-      // Simula uma requisição assíncrona
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      // Simulação de resposta da API
-      const isRegisteredSuccessfully = Math.random() > 0.3; // 70% de chance de sucesso
-
-      if (isRegisteredSuccessfully) {
-        setSuccess('Cadastro realizado com sucesso! Você já pode fazer login.');
-        // Limpar os campos do formulário
-        setName('');
-        setEmail('');
-        setPassword('');
-        setConfirmPassword('');
-        // Poderia redirecionar para a página de login
-        // router.push('/login');
-      } else {
-        setError('Falha no registro. Este e-mail já pode estar em uso ou outro erro ocorreu.');
-      }
-    } catch (err) {
-      setError('Ocorreu um erro ao tentar registrar. Tente novamente.');
-      console.error('Erro de registro:', err);
-    } finally {
-      setIsLoading(false);
+    if (password !== confirmPassword) {
+      setLocalError("As senhas não coincidem.");
+      return;
     }
+
+    if (password.length < 6) {
+      setLocalError("A senha deve ter pelo menos 6 caracteres.");
+      return;
+    }
+
+    const result = await dispatch(
+      registerUser({
+        name,
+        email,
+        password,
+        phone: phone || undefined,
+      })
+    );
+
+    if (registerUser.fulfilled.match(result)) {
+      // Registro bem-sucedido, redirecionar
+      router.push("/");
+    }
+    // Se houver erro, será exibido automaticamente pelo estado do Redux
   };
+
+  const displayError = localError || error;
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4">
       <Card className="w-full max-w-md p-6 shadow-lg">
         <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-bold text-gray-800">Criar Conta</CardTitle>
+          <CardTitle className="text-3xl font-bold text-gray-800">
+            Criar Conta
+          </CardTitle>
           <CardDescription className="text-gray-600 mt-2">
-            Preencha seus dados para criar uma nova conta.
+            Cadastre-se para começar a fazer seus pedidos.
           </CardDescription>
         </CardHeader>
+
         <CardContent>
-          <form onSubmit={handleRegister} className="space-y-6">
-            <div className="grid gap-2">
-              <Label htmlFor="name">Nome</Label>
+          <form onSubmit={handleRegister} className="space-y-4">
+            {/* Nome */}
+            <div className="space-y-2">
+              <Label
+                htmlFor="name"
+                className="text-sm font-medium text-gray-700"
+              >
+                Nome completo *
+              </Label>
               <Input
                 id="name"
                 type="text"
-                placeholder="Seu nome completo"
-                required
+                placeholder="Digite seu nome completo"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                required
+                className="w-full"
+                disabled={isLoading}
               />
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="email">E-mail</Label>
+
+            {/* Email */}
+            <div className="space-y-2">
+              <Label
+                htmlFor="email"
+                className="text-sm font-medium text-gray-700"
+              >
+                E-mail *
+              </Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="seu@exemplo.com"
-                required
+                placeholder="Digite seu e-mail"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full"
+                disabled={isLoading}
               />
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="password">Senha</Label>
+
+            {/* Telefone */}
+            <div className="space-y-2">
+              <Label
+                htmlFor="phone"
+                className="text-sm font-medium text-gray-700"
+              >
+                Telefone
+              </Label>
+              <Input
+                id="phone"
+                type="tel"
+                placeholder="(00) 00000-0000"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="w-full"
+                disabled={isLoading}
+              />
+            </div>
+
+            {/* Senha */}
+            <div className="space-y-2">
+              <Label
+                htmlFor="password"
+                className="text-sm font-medium text-gray-700"
+              >
+                Senha *
+              </Label>
               <Input
                 id="password"
                 type="password"
-                required
+                placeholder="Digite sua senha (mín. 6 caracteres)"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full"
+                disabled={isLoading}
+                minLength={6}
               />
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="confirm-password">Confirmar Senha</Label>
+
+            {/* Confirmar Senha */}
+            <div className="space-y-2">
+              <Label
+                htmlFor="confirmPassword"
+                className="text-sm font-medium text-gray-700"
+              >
+                Confirmar senha *
+              </Label>
               <Input
-                id="confirm-password"
+                id="confirmPassword"
                 type="password"
-                required
+                placeholder="Confirme sua senha"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                className="w-full"
+                disabled={isLoading}
               />
             </div>
-            {error && <p className="text-red-500 text-sm mt-2 text-center">{error}</p>}
-            {success && <p className="text-green-600 text-sm mt-2 text-center">{success}</p>}
-            <Button type="submit" className="w-full" disabled={isLoading}>
+
+            {/* Exibir erro */}
+            {displayError && (
+              <div className="text-sm text-red-600 text-center bg-red-50 p-3 rounded">
+                {displayError}
+              </div>
+            )}
+
+            {/* Botão de Registro */}
+            <Button
+              type="submit"
+              className="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg transition-colors"
+              disabled={isLoading}
+            >
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Registrando...
+                  Criando conta...
                 </>
               ) : (
-                'Criar Conta'
+                "Criar Conta"
               )}
             </Button>
           </form>
-          <div className="mt-4 text-center text-sm text-gray-600">
-            Já tem uma conta?{' '}
-            <Link href="/auth/login" className="underline text-blue-600 hover:text-blue-700">
-              Entrar
-            </Link>
+
+          {/* Link para Login */}
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600">
+              Já tem uma conta?{" "}
+              <Link
+                href="/auth/login"
+                className="text-red-600 font-medium hover:underline"
+              >
+                Faça login
+              </Link>
+            </p>
           </div>
         </CardContent>
       </Card>

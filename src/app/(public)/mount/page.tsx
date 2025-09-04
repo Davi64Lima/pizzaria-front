@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { IFlavors } from "@@types/pizza";
 import { pizzaSizes, types } from "@store/slices/pizza/types";
+import { api } from "@service/api";
 
 import { Check, ShoppingCart, Plus } from "lucide-react";
 import {
@@ -38,8 +39,8 @@ export default function MontarPizzaPage() {
   useEffect(() => {
     async function fetchFlavors() {
       try {
-        const res = await fetch("http://localhost:3000/flavors");
-        const data = await res.json();
+        const response = await api.get("/flavors");
+        const data = response.data;
 
         // Organiza os sabores por categoria
         const tradicionais = data.filter(

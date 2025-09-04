@@ -1,5 +1,5 @@
 import Footer from "@components/Footer";
-import Header from "@components/Header";
+import HeaderClient from "@components/HeaderClient";
 
 export default function PublicLayout({
   children,
@@ -8,7 +8,7 @@ export default function PublicLayout({
 }) {
   return (
     <div>
-      <Header />
+      <HeaderClient />
       <main>{children}</main>
       <Footer />
     </div>
