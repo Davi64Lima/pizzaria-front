@@ -67,7 +67,7 @@ const initialState: IAuthState = {
   user: null,
   token: null,
   isAuthenticated: false,
-  isLoading: false,
+  isLoading: true, // Começa como true para aguardar verificação inicial
   error: null,
 };
 

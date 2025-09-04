@@ -3,7 +3,7 @@
 import { useAppSelector } from "@/hooks/redux/useAppSelector";
 import { UserRole } from "@/store/slices/auth/types";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -20,9 +20,13 @@ export function ProtectedRoute({
     (state) => state.auth
   );
   const router = useRouter();
+  const [hasCheckedAuth, setHasCheckedAuth] = useState(false);
 
   useEffect(() => {
+    // Aguarda o carregamento inicial terminar
     if (!isLoading) {
+      setHasCheckedAuth(true);
+
       // Se não está autenticado, redireciona para login
       if (!isAuthenticated || !user) {
         router.push(redirectTo);
@@ -37,11 +41,14 @@ export function ProtectedRoute({
     }
   }, [user, isAuthenticated, isLoading, requiredRole, router, redirectTo]);
 
-  // Mostra loading enquanto verifica autenticação
-  if (isLoading) {
+  // Mostra loading enquanto verifica autenticação OU ainda não verificou
+  if (isLoading || !hasCheckedAuth) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Verificando autenticação...</p>
+        </div>
       </div>
     );
   }

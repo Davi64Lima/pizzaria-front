@@ -38,8 +38,6 @@ export async function POST(request: NextRequest) {
       phone: payload.phone,
     };
 
-    console.log(user);
-
     // Salvar nos cookies HTTP-only
     await setAuthCookies(access_token, refresh_token, user);
 
